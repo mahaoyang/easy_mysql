@@ -1,2 +1,2 @@
-# easy_mysql
+# masql
 mysql for humans
