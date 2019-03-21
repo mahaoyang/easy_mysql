@@ -45,8 +45,9 @@ mysql.insert('test', *data)
 mysql.replace('test', *data)
 mysql.insert_ignore('test', *data)
 
+# equal to "mysql.insert_ignore('test', *data)"
 mysql.insert_ignore('test', {'id': 6, 'name': 'test'}, {'id': 7,
-  'name': 'test'})  # is equal to "mysql.insert_ignore('test', *data)"
+  'name': 'test'})
 
 ```
 
@@ -125,8 +126,9 @@ mysql.insert('test', *data)
 mysql.replace('test', *data)
 mysql.insert_ignore('test', *data)
 
+# 等价于 "mysql.insert_ignore('test', *data)" 的写法
 mysql.insert_ignore('test', {'id': 6, 'name': 'test'}, {'id': 7,
-  'name': 'test'})  # 等价于 "mysql.insert_ignore('test', *data)"
+  'name': 'test'})
 
 ```
 
