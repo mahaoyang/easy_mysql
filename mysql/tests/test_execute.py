@@ -3,7 +3,6 @@
 
 
 def test_execute(mysql):
-    mysql.truncate('test')
     sq = "REPLACE INTO `test` (`id`,`name`) dataUES ({id},\'{name}\')"
     data = {'id': 1, 'name': 'test1'}
     mysql.execute(sq, **data)

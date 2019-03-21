@@ -12,6 +12,7 @@ def test_main():
     mysql.execute_sql("CREATE SCHEMA IF NOT EXISTS `default`;")
     mysql.execute_sql(
         "CREATE TABLE IF NOT EXISTS test(id   int PRIMARY KEY AUTO_INCREMENT,name varchar(64))charset utf8mb4;")
+    mysql.truncate('test')
     test_execute(mysql)
     test_single_data(mysql)
     test_multi_data(mysql)

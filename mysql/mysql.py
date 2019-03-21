@@ -7,7 +7,7 @@ import traceback
 
 
 class Mysql(object):
-    def __init__(self, batch_size=10000, *args, **kwargs):
+    def __init__(self, batch_size=10000, logger=None, *args, **kwargs):
         """
             Representation of a socket with a mysql server.
 
@@ -78,6 +78,7 @@ class Mysql(object):
         kwargs = kw
         self.con = pymysql.connect(*args, **kwargs)
         self.batch_size = batch_size
+        self.logger = logger
 
     @staticmethod
     def __is_select(sql):
@@ -106,7 +107,9 @@ class Mysql(object):
                 return cursor.fetchall()
             return result
         except Exception as E:
-            return traceback.format_exc()
+            if self.logger:
+                self.logger.error(traceback.format_exc())
+            return 0
 
     @staticmethod
     def __batch_slice(s, step):
