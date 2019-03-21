@@ -25,4 +25,5 @@ setup(name='masql',
       )
 
 # python setup.py sdist && python setup.py sdist upload && pip install --upgrade masql
-# https://betacat.online/posts/2017-03-09/upload-your-pypi-package/
+# https://www.jianshu.com/p/0dbb6f0c3b11
+# http://www.mahaoyang.cn/post/12/
