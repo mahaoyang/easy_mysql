@@ -75,6 +75,10 @@ mysql.close()
 ---
 
 
+
+
+
+
 # masql: 给人用的mysql库
 ![image](https://warehouse-camo.cmh1.psfhosted.org/1912c9df2012392febbfa09e84588bc474d9d010/68747470733a2f2f696d672e736869656c64732e696f2f707970692f6c2f72657175657374732e737667)
 
