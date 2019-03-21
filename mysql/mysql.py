@@ -201,7 +201,7 @@ class Mysql(object):
 
 if __name__ == '__main__':
     mysql = Mysql(password='rootroot', db='spider_system')
-    sql = "INSERT INTO `test` (`name`) VALUES (\'{name}\')"
+    sq = "INSERT INTO `test` (`name`) VALUES (\'{name}\')"
     # val = [{'name': 'test'}, {'name': 'test'}]
     # for i in range(100):
     #     mysql.execute(sql, *val)
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     # val = {'id': 1, 'name': 'test1'}
     val = [{'id': 1, 'name': 'test'}, {'id': 2, 'name': 'test'}]
     # mysql.replace('test', *val)
-    mysql.execute(sql, *val)
+    mysql.execute(sq, *val)
     # mysql.insert('test', *val)
     # mysql.insert_ignore('test', *val)
     # val = [1]
