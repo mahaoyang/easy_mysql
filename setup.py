@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='masql',
-      version='0.0.2',
+      version='0.0.3',
       description='mysql for humans',
       long_description=open('README.md').read(),
       author='Ma HaoYang',
