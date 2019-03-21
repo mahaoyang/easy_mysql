@@ -15,7 +15,7 @@ Behold, the power of masql
 ```python
 from mysql import Mysql
 
-mysql = Mysql(host='localhost', user='root', password='rootroot', db='default')
+mysql = Mysql(host='localhost', user='your db user', password='your db password', db='default')
 ```
 
 ### Creat test table and execute the raw sql
@@ -94,7 +94,7 @@ pip install masql
 ```python
 from mysql import Mysql
 
-mysql = Mysql(host='localhost', user='root', password='rootroot', db='default')
+mysql = Mysql(host='localhost', user='your db user', password='your db password', db='default')
 ```
 
 ### 执行原生sql并创建test表
