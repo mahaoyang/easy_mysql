@@ -289,27 +289,3 @@ class Mysql(object):
 
     def close(self):
         return self.con.close()
-
-
-if __name__ == '__main__':
-    mysql = Mysql(password='rootroot', db='default')
-    sq = "INSERT INTO `test` (`name`) VALUES (\'{name}\')"
-    # val = [{'name': 'test'}, {'name': 'test'}]
-    # for i in range(100):
-    #     mysql.execute(sql, *val)
-    # val = [1]
-    # val = [1, 'test']
-    # val = [[1, 'test'], [2, 'test']]
-    # val = {'id': 1, 'name': 'test1'}
-    val = [{'id': 1, 'name': 'test'}, {'id': 2, 'name': 'test'}]
-    mysql.replace('test', *val)
-    # mysql.execute(sq, *val)
-    # mysql.insert('test', *val)
-    # mysql.insert_ignore('test', *val)
-    # val = [1]
-    # val = [[1], [2]]
-    # val = {'id': 1}
-    # val = [{'id': 1}, {'id': 2}]
-    # mysql.delete('test', *val)
-    # mysql.execute_sql("TRUNCATE TABLE test;")
-

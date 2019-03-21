@@ -3,18 +3,17 @@
 
 
 def test_single_data(mysql):
-    mysql.truncate('test')
-    mysql.insert('test', 1)
-    mysql.replace('test', 1, 'test1')
-    val = [2]
+    mysql.insert('test', 8)
+    mysql.replace('test', 9, 'test9')
+    val = [10]
     mysql.insert('test', *val)
-    val = [2, 'test2']
+    val = [11, 'test11']
     mysql.replace('test', *val)
     mysql.insert_ignore('test', *val)
-    val = {'id': 3, 'name': 'test3'}
+    val = {'id': 12, 'name': 'test12'}
     mysql.insert('test', **val)
     mysql.replace('test', **val)
     mysql.insert_ignore('test', **val)
-    mysql.insert('test', id=4, name='test4')
-    mysql.replace('test', id=4, name='test4')
-    mysql.insert_ignore('test', id=4, name='test4')
+    mysql.insert('test', id=13, name='test13')
+    mysql.replace('test', id=14, name='test14')
+    mysql.insert_ignore('test', id=15, name='test15')
