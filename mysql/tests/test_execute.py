@@ -4,10 +4,10 @@
 
 def test_execute(mysql):
     mysql.truncate('test')
-    sq = "REPLACE INTO `test` (`id`,`name`) VALUES ({id},\'{name}\')"
-    val = {'id': 1, 'name': 'test1'}
-    mysql.execute(sq, **val)
-    sq = "REPLACE INTO `test` (`id`,`name`) VALUES (%s,\'%s\')"
+    sq = "REPLACE INTO `test` (`id`,`name`) dataUES ({id},\'{name}\')"
+    data = {'id': 1, 'name': 'test1'}
+    mysql.execute(sq, **data)
+    sq = "REPLACE INTO `test` (`id`,`name`) dataUES (%s,\'%s\')"
     mysql.execute(sq, 2, 'test2')
-    val = [3, 'test3']
-    mysql.execute(sq, *val)
+    data = [3, 'test3']
+    mysql.execute(sq, *data)

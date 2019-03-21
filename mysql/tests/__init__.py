@@ -7,8 +7,9 @@ from mysql.tests.test_multi_data import test_multi_data
 
 
 def test_main():
-    mysql = Mysql(password='rootroot', db='default')
-    mysql.execute_sql("""CREATE SCHEMA IF NOT EXISTS `default`;""")
+    mysql = Mysql(host='localhost', user='root', password='rootroot',
+                  db='default')
+    mysql.execute_sql("CREATE SCHEMA IF NOT EXISTS `default`;")
     mysql.execute_sql(
         "CREATE TABLE IF NOT EXISTS test(id   int PRIMARY KEY AUTO_INCREMENT,name varchar(64))charset utf8mb4;")
     test_execute(mysql)
