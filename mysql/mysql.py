@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 # -*- encoding: utf-8 -*-
+__author__ = 'MaHaoYang'
+
 import pymysql
 import traceback
 
@@ -82,6 +84,12 @@ class Mysql(object):
         return True if 'SELECT' in sql.upper() else False
 
     def execute_sql(self, sql):
+        """
+        execute raw sql
+        执行原生sql语句
+        :param sql: <str>
+        :return: <int> effect row number 影响行数 <tuple> query result 查询语句结果
+        """
         try:
             result = None
             select_flag = False
@@ -102,6 +110,13 @@ class Mysql(object):
 
     @staticmethod
     def __batch_slice(s, step):
+        """
+        cut into slices
+        切分batch
+        :param s: <list> array waitting for cut 待切数组
+        :param step: <int> step length 步长
+        :return:
+        """
         res = []
         quotient = len(s) // step
         if quotient:
@@ -112,6 +127,15 @@ class Mysql(object):
         return res
 
     def __multi_line_parser(self, table, sql, *args, **kwargs):
+        """
+        multi-line sql parser
+        多行sql语法解析器
+        :param table: <str> table name 表名
+        :param sql: <str>
+        :param args: columns key-value
+        :param kwargs: columns key-value
+        :return: <list>
+        """
         res = []
         if args:
             columns_sql = "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE table_name = '%s'" % table
@@ -138,6 +162,13 @@ class Mysql(object):
 
     @staticmethod
     def __single_line_parser(sql, item):
+        """
+        single line sql parser
+        单-行sql语法解析器
+        :param sql: <str>
+        :param item: <dict>
+        :return: <str>
+        """
         columns = ''
         values = ''
         for key, value in item.items():
@@ -152,43 +183,104 @@ class Mysql(object):
         return sql
 
     def insert(self, table, *args, **kwargs):
+        """
+        sql insert
+        :param table: <str> table name 表名
+        :param args: columns key-value
+        :param kwargs: columns key-value
+        :return:
+        """
         static = "INSERT INTO `%s` ({columns}) VALUES ({values})" % table
-        sqls = self.__multi_line_parser(table, static, *args, **kwargs)
-        for sql in sqls:
-            self.execute_sql(sql)
+        sql = self.__multi_line_parser(table, static, *args, **kwargs)
+        return self.execute_sql(sql)
 
     def insert_ignore(self, table, *args, **kwargs):
+        """
+        sql insert ignore
+        :param table: <str> table name 表名
+        :param args: columns key-value
+        :param kwargs: columns key-value
+        :return:
+        """
         static = "INSERT IGNORE INTO `%s` ({columns}) VALUES ({values})" % table
-        sqls = self.__multi_line_parser(table, static, *args, **kwargs)
-        for sql in sqls:
-            self.execute_sql(sql)
+        sql = self.__multi_line_parser(table, static, *args, **kwargs)
+        return self.execute_sql(sql)
 
     def replace(self, table, *args, **kwargs):
+        """
+        sql replace
+        :param table: <str> table name 表名
+        :param args: columns key-value
+        :param kwargs: columns key-value
+        :return:
+        """
         static = "REPLACE INTO `%s` ({columns}) VALUES ({values})" % table
-        sqls = self.__multi_line_parser(table, static, *args, **kwargs)
-        for sql in sqls:
-            self.execute_sql(sql)
+        sql = self.__multi_line_parser(table, static, *args, **kwargs)
+        return self.execute_sql(sql)
 
     def delete(self, table, *args, **kwargs):
+        """
+        sql delete
+        :param table: <str> table name 表名
+        :param args: columns key-value
+        :param kwargs: columns key-value
+        :return:
+        """
         static = "DELETE FROM `%s`  WHERE {columns} = {values}" % table
-        sqls = self.__multi_line_parser(table, static, *args, **kwargs)
-        for sql in sqls:
-            self.execute_sql(sql)
+        sql = self.__multi_line_parser(table, static, *args, **kwargs)
+        return self.execute_sql(sql)
 
-    def __sql_parser(self, text, *args, **kwargs):
+    def select(self, table, *args, **kwargs):
+        """
+        sql select
+        :param table: <str> table name 表名
+        :param args: columns key-value
+        :param kwargs: columns key-value
+        :return: <tuple> query result
+        """
+        static = 'SELECT * FROM %s' % table
+        if args or kwargs:
+            static = 'SELECT * FROM %s WHERE {columns} = {values}' % table
+        sql = self.__multi_line_parser(table, static, *args, **kwargs)
+        sql = sql[0]
+        return self.execute_sql(sql)
+
+    def truncate(self, table):
+        """
+        sql truncate
+        :param table: <str> table name 表名
+        :param args: columns key-value
+        :param kwargs: columns key-value
+        :return: int
+        """
+        static = "TRUNCATE TABLE %s" % table
+        return self.execute_sql(static)
+
+    def __sql_parser(self, sql_template, *args, **kwargs):
+        """
+        sql parser
+        Returns the exact string that is sent to the database by calling the
+        execute() method.
+        sql 语法解析器
+        调用execute()方法时执行该解析器，为execute()方法提供方便
+        :param sql_template: sql template sql模版
+        :param args: columns key-value
+        :param kwargs: columns key-value
+        :return: <list>
+        """
         res = []
         if args:
-            if isinstance(args[0], dict) and '{' in text:
+            if isinstance(args[0], dict) and '{' in sql_template:
                 for i in args:
-                    res.append(text.format(**i))
-            elif not isinstance(args[0], list) and '%s' in text:
-                res.append(text % args)
-            elif isinstance(args[0], list) and '%s' in text:
+                    res.append(sql_template.format(**i))
+            elif not isinstance(args[0], list) and '%s' in sql_template:
+                res.append(sql_template % args)
+            elif isinstance(args[0], list) and '%s' in sql_template:
                 for i in args:
-                    res.append(text % tuple(i))
+                    res.append(sql_template % tuple(i))
             return res
         if kwargs:
-            res.append(text.format(**kwargs))
+            res.append(sql_template.format(**kwargs))
             return res
 
     def execute(self, sql_template, *args, **kwargs):
@@ -200,7 +292,7 @@ class Mysql(object):
 
 
 if __name__ == '__main__':
-    mysql = Mysql(password='rootroot', db='spider_system')
+    mysql = Mysql(password='rootroot', db='default')
     sq = "INSERT INTO `test` (`name`) VALUES (\'{name}\')"
     # val = [{'name': 'test'}, {'name': 'test'}]
     # for i in range(100):
@@ -210,8 +302,8 @@ if __name__ == '__main__':
     # val = [[1, 'test'], [2, 'test']]
     # val = {'id': 1, 'name': 'test1'}
     val = [{'id': 1, 'name': 'test'}, {'id': 2, 'name': 'test'}]
-    # mysql.replace('test', *val)
-    mysql.execute(sq, *val)
+    mysql.replace('test', *val)
+    # mysql.execute(sq, *val)
     # mysql.insert('test', *val)
     # mysql.insert_ignore('test', *val)
     # val = [1]
@@ -220,3 +312,4 @@ if __name__ == '__main__':
     # val = [{'id': 1}, {'id': 2}]
     # mysql.delete('test', *val)
     # mysql.execute_sql("TRUNCATE TABLE test;")
+
