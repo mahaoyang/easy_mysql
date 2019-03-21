@@ -5,7 +5,8 @@ from mysql.tests.test_execute import test_execute
 from mysql.tests.test_single_data import test_single_data
 from mysql.tests.test_multi_data import test_multi_data
 
-if __name__ == '__main__':
+
+def test_main():
     mysql = Mysql(password='rootroot', db='default')
     mysql.execute_sql("""CREATE SCHEMA IF NOT EXISTS `default`;""")
     mysql.execute_sql(
@@ -13,3 +14,7 @@ if __name__ == '__main__':
     test_execute(mysql)
     test_single_data(mysql)
     test_multi_data(mysql)
+
+
+if __name__ == '__main__':
+    test_main()
