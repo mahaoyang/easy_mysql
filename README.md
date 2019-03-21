@@ -87,7 +87,7 @@ mysql.close()
 # masql: 给人用的mysql库
 ![image](https://warehouse-camo.cmh1.psfhosted.org/1912c9df2012392febbfa09e84588bc474d9d010/68747470733a2f2f696d672e736869656c64732e696f2f707970692f6c2f72657175657374732e737667)
 
-优雅、有机、不操心，适合人类食用
+适合人类食用的mysql库。优雅、有机、不用再为繁琐的入库操碎心
 
 ## 安装
 
