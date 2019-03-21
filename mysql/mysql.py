@@ -6,6 +6,66 @@ import traceback
 
 class Mysql(object):
     def __init__(self, batch_size=10000, *args, **kwargs):
+        """
+            Representation of a socket with a mysql server.
+
+            The proper way to get an instance of this class is to call
+            connect().
+
+            Establish a connection to the MySQL database. Accepts several
+            arguments:
+
+            :param host: Host where the database server is located
+            :param user: Username to log in as
+            :param password: Password to use.
+            :param database: Database to use, None to not use a particular one.
+            :param port: MySQL port to use, default is usually OK. (default: 3306)
+            :param bind_address: When the client has multiple network interfaces, specify
+                the interface from which to connect to the host. Argument can be
+                a hostname or an IP address.
+            :param unix_socket: Optionally, you can use a unix socket rather than TCP/IP.
+            :param read_timeout: The timeout for reading from the connection in seconds (default: None - no timeout)
+            :param write_timeout: The timeout for writing to the connection in seconds (default: None - no timeout)
+            :param charset: Charset you want to use.
+            :param sql_mode: Default SQL_MODE to use.
+            :param read_default_file:
+                Specifies  my.cnf file to read these parameters from under the [client] section.
+            :param conv:
+                Conversion dictionary to use instead of the default one.
+                This is used to provide custom marshalling and unmarshaling of types.
+                See converters.
+            :param use_unicode:
+                Whether or not to default to unicode strings.
+                This option defaults to true for Py3k.
+            :param client_flag: Custom flags to send to MySQL. Find potential values in constants.CLIENT.
+            :param cursorclass: Custom cursor class to use.
+            :param init_command: Initial SQL statement to run when connection is established.
+            :param connect_timeout: Timeout before throwing an exception when connecting.
+                (default: 10, min: 1, max: 31536000)
+            :param ssl:
+                A dict of arguments similar to mysql_ssl_set()'s parameters.
+            :param read_default_group: Group to read from in the configuration file.
+            :param compress: Not supported
+            :param named_pipe: Not supported
+            :param autocommit: Autocommit mode. None means use server default. (default: False)
+            :param local_infile: Boolean to enable the use of LOAD DATA LOCAL command. (default: False)
+            :param max_allowed_packet: Max size of packet sent to server in bytes. (default: 16MB)
+                Only used to limit size of "LOAD LOCAL INFILE" data packet smaller than default (16KB).
+            :param defer_connect: Don't explicitly connect on contruction - wait for connect call.
+                (default: False)
+            :param auth_plugin_map: A dict of plugin names to a class that processes that plugin.
+                The class will take the Connection object as the argument to the constructor.
+                The class needs an authenticate method taking an authentication packet as
+                an argument.  For the dialog plugin, a prompt(echo, prompt) method can be used
+                (if no authenticate method) for returning a string from the user. (experimental)
+            :param server_public_key: SHA256 authenticaiton plugin public key value. (default: None)
+            :param db: Alias for database. (for compatibility to MySQLdb)
+            :param passwd: Alias for password. (for compatibility to MySQLdb)
+            :param binary_prefix: Add _binary prefix on bytes and bytearray. (default: False)
+
+            See `Connection <https://www.python.org/dev/peps/pep-0249/#connection-objects>`_ in the
+            specification.
+        """
         kw = {'host': 'localhost',
               'user': 'root',
               'password': '1234',
@@ -41,11 +101,10 @@ class Mysql(object):
                 return cursor.fetchall()
             return result
         except Exception as E:
-            self.con.close()
             return traceback.format_exc()
 
     @staticmethod
-    def __slice(s, step):
+    def __batch_slice(s, step):
         res = []
         quotient = len(s) // step
         if quotient:
@@ -55,31 +114,33 @@ class Mysql(object):
             res.append(s)
         return res
 
-    def __columns_parser(self, table, sql, *args, **kwargs):
+    def __multi_line_parser(self, table, sql, *args, **kwargs):
         res = []
         if args:
             columns_sql = "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE table_name = '%s'" % table
             columns = [i['COLUMN_NAME'] for i in self.execute_sql(columns_sql)]
-            batch = self.__slice(args, self.batch_size)
+            batch = self.__batch_slice(args, self.batch_size)
             for args in batch:
                 if isinstance(args[0], dict):
                     for arg in args:
-                        res.append(self.__one_columns_parser(sql, item=arg))
+                        res.append(
+                            self.__single_line_parser(sql, item=arg))
                 elif isinstance(args[0], list):
                     for arg in args:
                         _columns = columns[:len(arg)]
-                        res.append(self.__one_columns_parser(sql, item=dict(
-                            zip(_columns, arg))))
+                        res.append(
+                            self.__single_line_parser(sql, item=dict(
+                                zip(_columns, arg))))
                 elif not isinstance(args[0], list):
                     _columns = columns[:len(args)]
-                    res.append(self.__one_columns_parser(sql, item=dict(
+                    res.append(self.__single_line_parser(sql, item=dict(
                         zip(_columns, args))))
         if kwargs:
-            res.append(self.__one_columns_parser(sql, item=kwargs))
+            res.append(self.__single_line_parser(sql, item=kwargs))
         return res
 
     @staticmethod
-    def __one_columns_parser(sql, item):
+    def __single_line_parser(sql, item):
         columns = ''
         values = ''
         for key, value in item.items():
@@ -95,25 +156,25 @@ class Mysql(object):
 
     def insert(self, table, *args, **kwargs):
         sql = "INSERT INTO `%s` ({columns}) VALUES ({values})" % table
-        sqls = self.__columns_parser(table, sql, *args, **kwargs)
+        sqls = self.__multi_line_parser(table, sql, *args, **kwargs)
         for sql in sqls:
             self.execute_sql(sql)
 
     def insert_ignore(self, table, *args, **kwargs):
         sql = "INSERT IGNORE INTO `%s` ({columns}) VALUES ({values})" % table
-        sqls = self.__columns_parser(table, sql, *args, **kwargs)
+        sqls = self.__multi_line_parser(table, sql, *args, **kwargs)
         for sql in sqls:
             self.execute_sql(sql)
 
     def replace(self, table, *args, **kwargs):
         sql = "REPLACE INTO `%s` ({columns}) VALUES ({values})" % table
-        sqls = self.__columns_parser(table, sql, *args, **kwargs)
+        sqls = self.__multi_line_parser(table, sql, *args, **kwargs)
         for sql in sqls:
             self.execute_sql(sql)
 
     def delete(self, table, *args, **kwargs):
         sql = "DELETE FROM `%s`  WHERE {columns} = {values}" % table
-        sqls = self.__columns_parser(table, sql, *args, **kwargs)
+        sqls = self.__multi_line_parser(table, sql, *args, **kwargs)
         for sql in sqls:
             self.execute_sql(sql)
 
@@ -133,9 +194,12 @@ class Mysql(object):
             res.append(text.format(**kwargs))
             return res
 
-    def execute(self, text, *args, **kwargs):
-        sql = self.__sql_parser(text, *args, **kwargs)
+    def execute(self, sql_template, *args, **kwargs):
+        sql = self.__sql_parser(sql_template, *args, **kwargs)
         self.execute_sql(sql)
+
+    def close(self):
+        return self.con.close()
 
 
 if __name__ == '__main__':
