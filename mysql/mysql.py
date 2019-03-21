@@ -74,10 +74,7 @@ class Mysql(object):
         if kwargs:
             kw.update(kwargs)
         kwargs = kw
-        if len(args) and len(args) < 5:
-            self.con = pymysql.connect(*args, **kwargs)
-        elif kwargs:
-            self.con = pymysql.connect(*args, **kwargs)
+        self.con = pymysql.connect(*args, **kwargs)
         self.batch_size = batch_size
 
     @staticmethod
