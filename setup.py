@@ -5,11 +5,11 @@ from distutils.core import setup
 setup(name='masql',
       version='0.0.1',
       description='mysql for humans',
-      long_description=open('README.txt').read(),
+      long_description=open('README.md').read(),
       author='Ma HaoYang',
       author_email='martinlord@foxmail.com',
       url='https://github.com/mahaoyang/masql/tree/master',
-      packages=['masql'],
+      packages=['mysql'],
       license='LICENSE.txt',
       classifiers=[
           'Development Status :: 4 - Beta',
@@ -23,5 +23,5 @@ setup(name='masql',
       ],
       )
 
-# python setup.py sdist && python setup.py sdist upload && pip install --upgrade spider-tool
+# python setup.py sdist && python setup.py sdist upload && pip install --upgrade masql
 # https://betacat.online/posts/2017-03-09/upload-your-pypi-package/
