@@ -145,7 +145,7 @@ mysql.insert_ignore('test', *data)
 mysql.close()
 ```
 
-##更多例子
+## 更多例子
 [More Example](https://github.com/mahaoyang/masql/tree/master/mysql/tests)
 
 ## 感谢
