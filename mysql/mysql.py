@@ -152,26 +152,26 @@ class Mysql(object):
         return sql
 
     def insert(self, table, *args, **kwargs):
-        sql = "INSERT INTO `%s` ({columns}) VALUES ({values})" % table
-        sqls = self.__multi_line_parser(table, sql, *args, **kwargs)
+        static = "INSERT INTO `%s` ({columns}) VALUES ({values})" % table
+        sqls = self.__multi_line_parser(table, static, *args, **kwargs)
         for sql in sqls:
             self.execute_sql(sql)
 
     def insert_ignore(self, table, *args, **kwargs):
-        sql = "INSERT IGNORE INTO `%s` ({columns}) VALUES ({values})" % table
-        sqls = self.__multi_line_parser(table, sql, *args, **kwargs)
+        static = "INSERT IGNORE INTO `%s` ({columns}) VALUES ({values})" % table
+        sqls = self.__multi_line_parser(table, static, *args, **kwargs)
         for sql in sqls:
             self.execute_sql(sql)
 
     def replace(self, table, *args, **kwargs):
-        sql = "REPLACE INTO `%s` ({columns}) VALUES ({values})" % table
-        sqls = self.__multi_line_parser(table, sql, *args, **kwargs)
+        static = "REPLACE INTO `%s` ({columns}) VALUES ({values})" % table
+        sqls = self.__multi_line_parser(table, static, *args, **kwargs)
         for sql in sqls:
             self.execute_sql(sql)
 
     def delete(self, table, *args, **kwargs):
-        sql = "DELETE FROM `%s`  WHERE {columns} = {values}" % table
-        sqls = self.__multi_line_parser(table, sql, *args, **kwargs)
+        static = "DELETE FROM `%s`  WHERE {columns} = {values}" % table
+        sqls = self.__multi_line_parser(table, static, *args, **kwargs)
         for sql in sqls:
             self.execute_sql(sql)
 
