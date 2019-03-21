@@ -91,15 +91,18 @@ class Mysql(object):
         :param sql: <str>
         :return: <int> effect row number 影响行数 <tuple> query result 查询语句结果
         """
+        current_sql = ''
         try:
             result = None
             select_flag = False
             with self.con.cursor() as cursor:
                 if isinstance(sql, list):
                     for i in sql:
+                        current_sql = i
                         select_flag = self.__is_select(i)
                         result = cursor.execute(i)
                 else:
+                    current_sql = sql
                     select_flag = self.__is_select(sql)
                     result = cursor.execute(sql)
             self.con.commit()
@@ -108,7 +111,8 @@ class Mysql(object):
             return result
         except Exception as E:
             if self.logger:
-                self.logger.error(traceback.format_exc())
+                self.logger.error('sql : %s\nError Message : %s' % (
+                    current_sql, traceback.format_exc()))
             return 0
 
     @staticmethod
