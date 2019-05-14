@@ -73,9 +73,6 @@ mysql.close()
 ## More Example
 [More Example](https://github.com/mahaoyang/masql/tree/master/mysql/tests)
 
-## Thanks
-[pymysql](https://github.com/PyMySQL/PyMySQL)
-
 
 ---
 
@@ -158,6 +155,3 @@ mysql.close()
 
 ## 更多例子
 [More Example](https://github.com/mahaoyang/masql/tree/master/mysql/tests)
-
-## 感谢
-[pymysql](https://github.com/PyMySQL/PyMySQL)

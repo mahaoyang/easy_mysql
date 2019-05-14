@@ -3,9 +3,9 @@
 from distutils.core import setup
 
 setup(name='masql',
-      version='0.0.4',
+      version='0.0.5',
       description='mysql for humans',
-      long_description=open('README.md').read(),
+      long_description=open('README.md', 'r').read(),
       long_description_content_type="text/markdown",
       author='Ma HaoYang',
       author_email='martinlord@foxmail.com',

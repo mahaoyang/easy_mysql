@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- encoding: utf-8 -*-
-__author__ = 'MaHaoYang'
+
 
 import pymysql
 import traceback
@@ -87,9 +87,10 @@ class Mysql(object):
     def execute_sql(self, sql):
         """
         execute raw sql
-        执行原生sql语句
-        :param sql: <str>
+        执行原生sql语句(支持增删改查，批量查暂不支持)
+        :param sql: <str/list>
         :return: <int> effect row number 影响行数 <tuple> query result 查询语句结果
+        :todo: 解决多个select的sql的限制
         """
         current_sql = ''
         try:
@@ -109,7 +110,7 @@ class Mysql(object):
             if select_flag:
                 return cursor.fetchall()
             return result
-        except Exception as E:
+        except Exception:
             if self.logger:
                 self.logger.error('sql : %s\nError Message : %s' % (
                     current_sql, traceback.format_exc()))
@@ -159,7 +160,7 @@ class Mysql(object):
                         res.append(
                             self.__single_line_parser(sql, item=dict(
                                 zip(_columns, arg))))
-                elif not isinstance(args[0], list):
+                else:
                     _columns = columns[:len(args)]
                     res.append(self.__single_line_parser(sql, item=dict(
                         zip(_columns, args))))
